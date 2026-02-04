@@ -46,7 +46,7 @@ public class ProductoService {
                     productoExistente.setDescripcion(productoActualizado.getDescripcion());
                     productoExistente.setPrecio(productoActualizado.getPrecio());
                     productoExistente.setInventario(productoActualizado.getInventario());
-                    productoExistente.setImagenUrl(productoActualizado.getImagenUrl());
+                    productoExistente.setImagenes(productoActualizado.getImagenes());
                     productoExistente.setCategoria(productoActualizado.getCategoria());
                     return productoRepository.save(productoExistente);
                 })
