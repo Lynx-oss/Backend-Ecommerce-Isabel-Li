@@ -13,15 +13,11 @@ import com.example.IsabelLi.ecommerce.security.JwtUtil;
 import com.example.IsabelLi.ecommerce.model.Rol;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Service
 public class AuthService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-
 
     public AuthService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.usuarioRepository = usuarioRepository;
@@ -30,8 +26,8 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthResponse register(RegisterRequest request){
-        if (usuarioRepository.existsByEmail(request.getEmail())){
+    public AuthResponse register(RegisterRequest request) {
+        if (usuarioRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("El email ya esta registrado");
         }
 
@@ -45,43 +41,30 @@ public class AuthService {
 
         usuarioRepository.save(usuario);
 
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", usuario.getId());
-        String token = jwtUtil.generateToken(usuario.getEmail(), claims.toString());
+        String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol().name());
 
         return new AuthResponse(
                 token,
                 usuario.getEmail(),
                 usuario.getNombre(),
-                usuario.getRol().name()
-        );
+                usuario.getRol().name());
     }
 
-    public AuthResponse login(LoginRequest request){
+    public AuthResponse login(LoginRequest request) {
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Email o contraseña Incorrectos"));
 
-        if(!passwordEncoder.matches(request.getPassword(), usuario.getPassword())){
+        if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
             throw new RuntimeException("Email o contraseña incorrectos");
         }
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", usuario.getId());
-        String token = jwtUtil.generateToken(usuario.getEmail(), claims.toString());
-
-
+        String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol().name());
 
         return new AuthResponse(
                 token,
                 usuario.getEmail(),
                 usuario.getNombre(),
-                usuario.getRol().name()
-        );
+                usuario.getRol().name());
     }
-
-
-
-
 
 }
