@@ -1,4 +1,6 @@
 package com.example.IsabelLi.ecommerce.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -13,6 +15,7 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
@@ -24,7 +27,7 @@ public class Usuario {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private  Rol rol = Rol.USER;
+    private Rol rol = Rol.USER;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
