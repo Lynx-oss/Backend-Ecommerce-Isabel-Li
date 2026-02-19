@@ -1,10 +1,23 @@
 package com.example.IsabelLi.ecommerce.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 public class RegisterRequest {
+    @NotBlank(message = "El email es requerido")
+    @Email(message = "Debe proporcionar un email valido")
     private String email;
+
+    @NotBlank(message = "la contraseña es requerida")
+    @Size(min = 8, message = "la contraseña debe tener al menos 8 caracteres")
     private String password;
+
+    @NotBlank(message = "el nombre es requerido")
     private String nombre;
+    @NotBlank(message = "el apellido es requerido")
     private String apellido;
+
     private String telefono;
 
     public RegisterRequest() {
