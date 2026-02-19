@@ -1,4 +1,5 @@
 package com.example.IsabelLi.ecommerce.controller;
+
 import com.example.IsabelLi.ecommerce.model.Carrito;
 import com.example.IsabelLi.ecommerce.repository.UsuarioRepository;
 import com.example.IsabelLi.ecommerce.service.CarritoService;
@@ -7,9 +8,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.Map;
+
 @RestController
 @RequestMapping("/api/carrito")
-@CrossOrigin(origins = "http://localhost:3000")
 public class CarritoController {
 
     private final CarritoService carritoService;

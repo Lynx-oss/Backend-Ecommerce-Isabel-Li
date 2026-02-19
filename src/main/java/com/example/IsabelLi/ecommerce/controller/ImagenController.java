@@ -11,7 +11,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/imagenes")
-@CrossOrigin(origins = "http://localhost:3000")
 public class ImagenController {
 
     private final CloudinaryService cloudinaryService;

@@ -1,4 +1,5 @@
 package com.example.IsabelLi.ecommerce.controller;
+
 import com.example.IsabelLi.ecommerce.model.EstadoOrden;
 import com.example.IsabelLi.ecommerce.model.Orden;
 import com.example.IsabelLi.ecommerce.repository.UsuarioRepository;
@@ -9,9 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+
 @RestController
 @RequestMapping("/api/ordenes")
-@CrossOrigin(origins = "http://localhost:3000")
 public class OrdenController {
 
     private final OrdenService ordenService;

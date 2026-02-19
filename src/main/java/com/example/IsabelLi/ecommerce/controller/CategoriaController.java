@@ -10,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/categorias")
-@CrossOrigin(origins = "http://localhost:3000")
 public class CategoriaController {
     private final CategoriaService categoriaService;
 
@@ -19,22 +18,22 @@ public class CategoriaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Categoria>> obtenerTodos(){
+    public ResponseEntity<List<Categoria>> obtenerTodos() {
         return ResponseEntity.ok(categoriaService.obtenerTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Categoria> obtenerPorId(@PathVariable Long id){
+    public ResponseEntity<Categoria> obtenerPorId(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(categoriaService.obtenerPorId(id));
-        } catch (Exception e ){
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping
-    public ResponseEntity<Categoria> crear(@RequestBody Categoria categoria){
-        try{
+    public ResponseEntity<Categoria> crear(@RequestBody Categoria categoria) {
+        try {
             Categoria nueva = categoriaService.crear(categoria);
             return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
         } catch (Exception e) {
@@ -46,17 +45,17 @@ public class CategoriaController {
     public ResponseEntity<Categoria> actualizar(@PathVariable Long id, @RequestBody Categoria categoria) {
         try {
             return ResponseEntity.ok(categoriaService.actualizar(id, categoria));
-        } catch ( Exception e ){
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id){
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         try {
             categoriaService.eliminar(id);
             return ResponseEntity.noContent().build();
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }

@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/productos")
 
-@CrossOrigin(origins = "http://localhost:3000")
 public class ProductoController {
 
     private final ProductoService productoService;
@@ -73,7 +72,7 @@ public class ProductoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?>eliminar(@PathVariable Long id) {
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
         System.out.println("=== DELETE REQUEST RECIBIDO ===");
         System.out.println("Eliminando producto ID: " + id);
         try {
