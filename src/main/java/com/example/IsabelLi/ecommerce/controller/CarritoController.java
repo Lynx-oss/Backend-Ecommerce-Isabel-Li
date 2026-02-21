@@ -1,5 +1,6 @@
 package com.example.IsabelLi.ecommerce.controller;
 
+import com.example.IsabelLi.ecommerce.dto.CarritoResponse;
 import com.example.IsabelLi.ecommerce.model.Carrito;
 import com.example.IsabelLi.ecommerce.repository.UsuarioRepository;
 import com.example.IsabelLi.ecommerce.service.CarritoService;
@@ -22,14 +23,14 @@ public class CarritoController {
     }
 
     @GetMapping
-    public ResponseEntity<Carrito> obtenerCarrito(Authentication authentication) {
+    public ResponseEntity<CarritoResponse> obtenerCarrito(Authentication authentication) {
         Long usuarioId = obtenerUsuarioId(authentication);
         Carrito carrito = carritoService.obtenerOCrearCarrito(usuarioId);
-        return ResponseEntity.ok(carrito);
+        return ResponseEntity.ok(CarritoResponse.fromEntity(carrito));
     }
 
     @PostMapping("/agregar")
-    public ResponseEntity<Carrito> agregarProducto(
+    public ResponseEntity<CarritoResponse> agregarProducto(
             @RequestBody Map<String, Object> request,
             Authentication authentication) {
         try {
@@ -38,14 +39,14 @@ public class CarritoController {
             Integer cantidad = Integer.valueOf(request.get("cantidad").toString());
 
             Carrito carrito = carritoService.agregarProducto(usuarioId, productoId, cantidad);
-            return ResponseEntity.ok(carrito);
+            return ResponseEntity.ok(CarritoResponse.fromEntity(carrito));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/item/{itemId}")
-    public ResponseEntity<Carrito> actualizarCantidad(
+    public ResponseEntity<CarritoResponse> actualizarCantidad(
             @PathVariable Long itemId,
             @RequestBody Map<String, Integer> request,
             Authentication authentication) {
@@ -54,20 +55,20 @@ public class CarritoController {
             Integer nuevaCantidad = request.get("cantidad");
 
             Carrito carrito = carritoService.actualizarCantidad(usuarioId, itemId, nuevaCantidad);
-            return ResponseEntity.ok(carrito);
+            return ResponseEntity.ok(CarritoResponse.fromEntity(carrito));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @DeleteMapping("/item/{itemId}")
-    public ResponseEntity<Carrito> eliminarProducto(
+    public ResponseEntity<CarritoResponse> eliminarProducto(
             @PathVariable Long itemId,
             Authentication authentication) {
         try {
             Long usuarioId = obtenerUsuarioId(authentication);
             Carrito carrito = carritoService.eliminarProducto(usuarioId, itemId);
-            return ResponseEntity.ok(carrito);
+            return ResponseEntity.ok(CarritoResponse.fromEntity(carrito));
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }

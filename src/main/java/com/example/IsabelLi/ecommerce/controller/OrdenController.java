@@ -1,5 +1,6 @@
 package com.example.IsabelLi.ecommerce.controller;
 
+import com.example.IsabelLi.ecommerce.dto.OrdenResponse;
 import com.example.IsabelLi.ecommerce.model.EstadoOrden;
 import com.example.IsabelLi.ecommerce.model.Orden;
 import com.example.IsabelLi.ecommerce.repository.UsuarioRepository;
@@ -10,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/ordenes")
@@ -17,6 +20,7 @@ public class OrdenController {
 
     private final OrdenService ordenService;
     private final UsuarioRepository usuarioRepository;
+    private static final Logger logger = LoggerFactory.getLogger(OrdenController.class);
 
     public OrdenController(OrdenService ordenService, UsuarioRepository usuarioRepository) {
         this.ordenService = ordenService;
@@ -24,7 +28,7 @@ public class OrdenController {
     }
 
     @PostMapping
-    public ResponseEntity<Orden> crearOrden(
+    public ResponseEntity<OrdenResponse> crearOrden(
             @RequestBody Map<String, String> request,
             Authentication authentication) {
         try {
@@ -32,22 +36,23 @@ public class OrdenController {
             String direccionEnvio = request.get("direccionEnvio");
 
             Orden orden = ordenService.crearOrdenDesdeCarrito(usuarioId, direccionEnvio);
-            return ResponseEntity.status(HttpStatus.CREATED).body(orden);
+            return ResponseEntity.status(HttpStatus.CREATED).body(OrdenResponse.fromEntity(orden));
         } catch (Exception e) {
-            System.out.println("Error al crear orden: " + e.getMessage());  // Agregar esto
+            logger.error("Error: {} ", e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
 
     @GetMapping("/mis-ordenes")
-    public ResponseEntity<List<Orden>> obtenerMisOrdenes(Authentication authentication) {
+    public ResponseEntity<List<OrdenResponse>> obtenerMisOrdenes(Authentication authentication) {
         Long usuarioId = obtenerUsuarioId(authentication);
         List<Orden> ordenes = ordenService.obtenerOrdenesPorUsuario(usuarioId);
-        return ResponseEntity.ok(ordenes);
+        return ResponseEntity.ok(ordenes.stream().
+                map(OrdenResponse::fromEntity).toList());
     }
 
     @GetMapping("/{ordenId}")
-    public ResponseEntity<Orden> obtenerOrdenPorId(
+    public ResponseEntity<OrdenResponse> obtenerOrdenPorId(
             @PathVariable Long ordenId,
             Authentication authentication) {
         try {
@@ -58,27 +63,26 @@ public class OrdenController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
-            return ResponseEntity.ok(orden);
+            return ResponseEntity.ok(OrdenResponse.fromEntity(orden));
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping("/{ordenId}/cancelar")
-    public ResponseEntity<Orden> cancelarOrden(
+    public ResponseEntity<OrdenResponse> cancelarOrden(
             @PathVariable Long ordenId,
             Authentication authentication) {
         try {
             Orden orden = ordenService.obtenerOrdenPorId(ordenId);
             Long usuarioId = obtenerUsuarioId(authentication);
 
-            // Solo el dueño puede cancelar
             if (!orden.getUsuario().getId().equals(usuarioId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
             Orden ordenCancelada = ordenService.cancelarOrden(ordenId);
-            return ResponseEntity.ok(ordenCancelada);
+            return ResponseEntity.ok(OrdenResponse.fromEntity(ordenCancelada));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -86,28 +90,28 @@ public class OrdenController {
 
 
     @GetMapping("/admin/todas")
-    public ResponseEntity<List<Orden>> obtenerTodasLasOrdenes() {
+    public ResponseEntity<List<OrdenResponse>> obtenerTodasLasOrdenes() {
         List<Orden> ordenes = ordenService.obtenerTodasLasOrdenes();
-        return ResponseEntity.ok(ordenes);
+        return ResponseEntity.ok(ordenes.stream().map(OrdenResponse::fromEntity).toList());
     }
 
     @PatchMapping("/admin/{ordenId}/estado")
-    public ResponseEntity<Orden> actualizarEstado(
+    public ResponseEntity<OrdenResponse> actualizarEstado(
             @PathVariable Long ordenId,
             @RequestBody Map<String, String> request) {
         try {
             EstadoOrden nuevoEstado = EstadoOrden.valueOf(request.get("estado"));
             Orden orden = ordenService.actualizarEstado(ordenId, nuevoEstado);
-            return ResponseEntity.ok(orden);
+            return ResponseEntity.ok(OrdenResponse.fromEntity(orden));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @GetMapping("/admin/estado/{estado}")
-    public ResponseEntity<List<Orden>> obtenerOrdenesPorEstado(@PathVariable EstadoOrden estado) {
+    public ResponseEntity<List<OrdenResponse>> obtenerOrdenesPorEstado(@PathVariable EstadoOrden estado) {
         List<Orden> ordenes = ordenService.obtenerOrdenesPorEstado(estado);
-        return ResponseEntity.ok(ordenes);
+        return ResponseEntity.ok(ordenes.stream().map(OrdenResponse::fromEntity).toList());
     }
 
    private Long obtenerUsuarioId(Authentication authentication) {

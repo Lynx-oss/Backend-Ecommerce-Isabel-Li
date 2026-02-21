@@ -1,10 +1,13 @@
 package com.example.IsabelLi.ecommerce.controller;
 
 import com.example.IsabelLi.ecommerce.service.CloudinaryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.IOException;
 import java.util.Map;
@@ -14,6 +17,7 @@ import java.util.Map;
 public class ImagenController {
 
     private final CloudinaryService cloudinaryService;
+    private final static Logger logger = LoggerFactory.getLogger(ImagenController.class);
 
     public ImagenController(CloudinaryService cloudinaryService) {
         this.cloudinaryService = cloudinaryService;
@@ -21,15 +25,14 @@ public class ImagenController {
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
-        System.out.println("=== UPLOAD REQUEST RECIBIDO ===");
-        System.out.println("Archivo: " + file.getOriginalFilename());
-        System.out.println("Tamaño: " + file.getSize());
+        logger.debug("Upload Request Recibido: {} ({} bytes) ", file.getOriginalFilename(), file.getSize());
+
         try {
             String url = cloudinaryService.uploadImage(file, "productos");
-            System.out.println("URL generada: " + url);
+            logger.debug("Imagen subida exitosamente: {}", url);
             return ResponseEntity.ok(Map.of("url", url));
         } catch (IOException e) {
-            System.out.println("Error al subir: " + e.getMessage());
+            logger.error("Error al subir {} ", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error al subir imagen: " + e.getMessage()));
         }

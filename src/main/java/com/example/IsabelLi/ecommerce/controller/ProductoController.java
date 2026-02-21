@@ -1,11 +1,13 @@
 package com.example.IsabelLi.ecommerce.controller;
 
+import com.example.IsabelLi.ecommerce.dto.ProductoResponse;
 import com.example.IsabelLi.ecommerce.model.Producto;
 import com.example.IsabelLi.ecommerce.service.ProductoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import java.util.List;
 
 @RestController
@@ -14,57 +16,60 @@ import java.util.List;
 public class ProductoController {
 
     private final ProductoService productoService;
+    private final static Logger logger = LoggerFactory.getLogger(ProductoController.class);
+
 
     public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
     }
 
     @GetMapping
-    public ResponseEntity<List<Producto>> obtenerTodos() {
+    public ResponseEntity<List<ProductoResponse>> obtenerTodos() {
         List<Producto> productos = productoService.obtenerTodos();
-        return ResponseEntity.ok(productos);
+        return ResponseEntity.ok(productos.stream().map(ProductoResponse::fromEntity).toList()
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Producto> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<ProductoResponse> obtenerPorId(@PathVariable Long id) {
         return productoService.obtenerPorId(id)
-                .map(ResponseEntity::ok)
+                .map(p -> ResponseEntity.ok(ProductoResponse.fromEntity(p)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/categoria/{categoriaId}")
-    public ResponseEntity<List<Producto>> obtenerPorCategoria(@PathVariable Long categoriaId) {
+    public ResponseEntity<List<ProductoResponse>> obtenerPorCategoria(@PathVariable Long categoriaId) {
         List<Producto> productos = productoService.obtenerPorCategoria(categoriaId);
-        return ResponseEntity.ok(productos);
+        return ResponseEntity.ok(productos.stream().map(ProductoResponse::fromEntity).toList());
     }
 
     @PostMapping
-    public ResponseEntity<Producto> crear(@RequestBody Producto producto) {
+    public ResponseEntity<ProductoResponse> crear(@RequestBody Producto producto) {
         try {
             Producto nuevoProducto = productoService.crear(producto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoProducto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ProductoResponse.fromEntity(nuevoProducto));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Producto> actualizar(
+    public ResponseEntity<ProductoResponse> actualizar(
             @PathVariable Long id,
             @RequestBody Producto producto) {
         try {
             Producto productoActualizado = productoService.actualizar(id, producto);
-            return ResponseEntity.ok(productoActualizado);
+            return ResponseEntity.ok(ProductoResponse.fromEntity(productoActualizado));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PatchMapping("/{id}/inventario")
-    public ResponseEntity<Producto> actualizarInventario(@PathVariable Long id, @RequestParam int cantidad) {
+    public ResponseEntity<ProductoResponse> actualizarInventario(@PathVariable Long id, @RequestParam int cantidad) {
         try {
             Producto productoActualizado = productoService.actualizarInventario(id, cantidad);
-            return ResponseEntity.ok(productoActualizado);
+            return ResponseEntity.ok(ProductoResponse.fromEntity(productoActualizado));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -73,18 +78,18 @@ public class ProductoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
-        System.out.println("=== DELETE REQUEST RECIBIDO ===");
-        System.out.println("Eliminando producto ID: " + id);
+        logger.info("=== DELETE REQUEST RECIBIDO ===");
+        logger.debug("Eliminando producto ID: {}" , id);
         try {
             productoService.eliminar(id);
-            System.out.println("Producto eliminado exitosamente");
+            logger.info("Producto eliminado exitosamente");
             return ResponseEntity.noContent().build();
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            System.out.println("Error: Producto tiene órdenes asociadas");
+            logger.error("Error: Producto tiene órdenes asociadas");
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(java.util.Map.of("error", "No se puede eliminar el producto porque tiene órdenes asociadas"));
         } catch (RuntimeException e) {
-            System.out.println("Error al eliminar: " + e.getMessage());
+            logger.error("Error al eliminar: {} " , e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
