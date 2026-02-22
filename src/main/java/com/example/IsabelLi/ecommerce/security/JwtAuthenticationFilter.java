@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -18,6 +20,8 @@ import java.util.Collections;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final static Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -35,8 +39,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String role = jwtUtil.extractRol(token);
 
                 if(email != null && jwtUtil.validateToken(token, email)){
-                    System.out.println("Rol extraido del token: " + role);
-                    System.out.println("autoridad creada: ROLE_" + role);
+                    logger.debug("Rol extraido del token: {} ",  role);
+                    logger.debug("autoridad creada: ROLE_ {}" , role);
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             email,
                             null,
@@ -47,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (Exception e ){
-                logger.error("error al validar token: " + e.getMessage());
+                logger.error("error al validar token: {}" , e.getMessage());
             }
         }
         filterChain.doFilter(request, response);
