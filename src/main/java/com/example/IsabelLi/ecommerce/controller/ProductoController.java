@@ -3,9 +3,13 @@ package com.example.IsabelLi.ecommerce.controller;
 import com.example.IsabelLi.ecommerce.dto.ProductoResponse;
 import com.example.IsabelLi.ecommerce.model.Producto;
 import com.example.IsabelLi.ecommerce.service.ProductoService;
+import org.apache.coyote.Response;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import java.util.List;
@@ -24,10 +28,10 @@ public class ProductoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductoResponse>> obtenerTodos() {
-        List<Producto> productos = productoService.obtenerTodos();
-        return ResponseEntity.ok(productos.stream().map(ProductoResponse::fromEntity).toList()
-        );
+    public ResponseEntity<Page<ProductoResponse>> ObtenerTodos(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductoResponse> productos = productoService.obtenerTodosPaginado(pageable).map(ProductoResponse::fromEntity);
+        return ResponseEntity.ok(productos);
     }
 
     @GetMapping("/{id}")
