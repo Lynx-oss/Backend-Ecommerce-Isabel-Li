@@ -25,6 +25,15 @@ public class ImagenController {
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
+        if(file.getSize() > 5 * 1024 * 1024){
+            return ResponseEntity.badRequest().body(Map.of("error", "La imagen no debe superar los 5MB"));
+        }
+
+        String contentType = file.getContentType();
+        if(contentType == null || !contentType.startsWith("image/")){
+            return ResponseEntity.badRequest()
+                    .body(Map.of("Error" , "Solo se permiten archivos de imagen"));
+        }
         logger.debug("Upload Request Recibido: {} ({} bytes) ", file.getOriginalFilename(), file.getSize());
 
         try {
