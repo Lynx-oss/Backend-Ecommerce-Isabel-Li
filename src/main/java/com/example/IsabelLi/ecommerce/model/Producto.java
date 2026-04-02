@@ -20,6 +20,12 @@ public class Producto {
     @Column(name = "imagen_url")
     private List<String> imagenes = new ArrayList<>();
 
+    @ElementCollection
+    @CollectionTable(name ="producto_tallas", joinColumns = @JoinColumn(name = "producto_id"))
+    @Column(name = "talla")
+    private List<String> tallas = new ArrayList<>();
+
+
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
@@ -28,7 +34,7 @@ public class Producto {
     }
 
     public Producto(Long id, String nombre, String descripcion, BigDecimal precio,
-            int inventario, List<String> imagenes, Categoria categoria) {
+            int inventario, List<String> imagenes, Categoria categoria, List<String> tallas) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -36,6 +42,7 @@ public class Producto {
         this.inventario = inventario;
         this.imagenes = imagenes;
         this.categoria = categoria;
+        this.tallas = tallas;
     }
 
     public Long getId() {
@@ -66,6 +73,10 @@ public class Producto {
         return categoria;
     }
 
+    public List<String> getTallas() {
+        return tallas;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -92,5 +103,9 @@ public class Producto {
 
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
+    }
+
+    public void setTallas(List<String> tallas){
+        this.tallas = tallas;
     }
 }
