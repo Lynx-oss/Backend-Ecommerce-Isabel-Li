@@ -1,5 +1,6 @@
 package com.example.IsabelLi.ecommerce.controller;
 
+import com.example.IsabelLi.ecommerce.dto.ProductoRequest;
 import com.example.IsabelLi.ecommerce.dto.ProductoResponse;
 import com.example.IsabelLi.ecommerce.model.Producto;
 import com.example.IsabelLi.ecommerce.service.ProductoService;
@@ -48,9 +49,9 @@ public class ProductoController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductoResponse> crear(@RequestBody Producto producto) {
+    public ResponseEntity<ProductoResponse> crear(@RequestBody ProductoRequest dto) {
         try {
-            Producto nuevoProducto = productoService.crear(producto);
+            Producto nuevoProducto = productoService.crearDesdeDTO(dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(ProductoResponse.fromEntity(nuevoProducto));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
