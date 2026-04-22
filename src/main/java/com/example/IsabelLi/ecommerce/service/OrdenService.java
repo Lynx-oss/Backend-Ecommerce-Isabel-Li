@@ -1,6 +1,7 @@
 package com.example.IsabelLi.ecommerce.service;
 import com.example.IsabelLi.ecommerce.model.*;
 import com.example.IsabelLi.ecommerce.repository.OrdenRepository;
+import com.example.IsabelLi.ecommerce.repository.ProductoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -10,13 +11,15 @@ public class OrdenService {
     private final OrdenRepository ordenRepository;
     private final CarritoService carritoService;
     private final ProductoService productoService;
+    private final ProductoRepository productoRepository;
 
     public OrdenService(OrdenRepository ordenRepository,
                         CarritoService carritoService,
-                        ProductoService productoService) {
+                        ProductoService productoService,ProductoRepository productoRepository ) {
         this.ordenRepository = ordenRepository;
         this.carritoService = carritoService;
         this.productoService = productoService;
+        this.productoRepository = productoRepository;
     }
 
     @Transactional
@@ -90,6 +93,7 @@ public class OrdenService {
         for (ItemOrden item : orden.getItems()) {
             Producto producto = item.getProducto();
             producto.setInventario(producto.getInventario() + item.getCantidad());
+            productoRepository.save(producto);
         }
 
         orden.setEstado(EstadoOrden.CANCELADO);
