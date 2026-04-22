@@ -1,6 +1,9 @@
 package com.example.IsabelLi.ecommerce.service;
 
+import com.example.IsabelLi.ecommerce.dto.ProductoRequest;
+import com.example.IsabelLi.ecommerce.model.Categoria;
 import com.example.IsabelLi.ecommerce.model.Producto;
+import com.example.IsabelLi.ecommerce.repository.CategoriaRepository;
 import com.example.IsabelLi.ecommerce.repository.ProductoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +18,11 @@ import java.util.Optional;
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    public ProductoService(ProductoRepository productoRepository) {
+    public ProductoService(ProductoRepository productoRepository, CategoriaRepository categoriaRepository) {
         this.productoRepository = productoRepository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     public List<Producto> obtenerTodos(){
@@ -43,6 +48,27 @@ public class ProductoService {
         }
         return productoRepository.save(producto);
     }
+
+    @Transactional
+    public Producto crearDesdeDTO(ProductoRequest dto) {
+        if (dto.getPrecio().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("El precio debe ser mayor a 0");
+        }
+        Producto p = new Producto();
+        p.setNombre(dto.getNombre());
+        p.setDescripcion(dto.getDescripcion());
+        p.setPrecio(dto.getPrecio());
+        p.setInventario(dto.getInventario());
+        p.setImagenes(dto.getImagenes());
+        p.setTallas(dto.getTallas());
+        if (dto.getCategoriaId() != null) {
+            Categoria cat = categoriaRepository.findById(dto.getCategoriaId())
+                    .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+            p.setCategoria(cat);
+        }
+        return productoRepository.save(p);
+    }
+
 
 
     @Transactional
