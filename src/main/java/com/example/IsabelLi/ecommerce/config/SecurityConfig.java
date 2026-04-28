@@ -62,6 +62,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/categorias/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/categorias/**").hasRole("ADMIN")
                         .requestMatchers("/api/imagenes/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios/me").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/usuarios/me").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/api/usuarios/me/password").authenticated()
 
                         .anyRequest().authenticated()
 
