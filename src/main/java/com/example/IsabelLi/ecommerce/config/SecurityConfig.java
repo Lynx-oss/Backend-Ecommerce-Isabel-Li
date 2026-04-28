@@ -65,6 +65,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/usuarios/me").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/usuarios/me").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/api/usuarios/me/password").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/productos/buscar").permitAll()
 
                         .anyRequest().authenticated()
 

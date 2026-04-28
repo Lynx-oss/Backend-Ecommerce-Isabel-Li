@@ -4,7 +4,6 @@ import com.example.IsabelLi.ecommerce.dto.ProductoRequest;
 import com.example.IsabelLi.ecommerce.dto.ProductoResponse;
 import com.example.IsabelLi.ecommerce.model.Producto;
 import com.example.IsabelLi.ecommerce.service.ProductoService;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -47,6 +48,21 @@ public class ProductoController {
         List<Producto> productos = productoService.obtenerPorCategoria(categoriaId);
         return ResponseEntity.ok(productos.stream().map(ProductoResponse::fromEntity).toList());
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<ProductoResponse>> buscar (
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false)BigDecimal precioMin,
+            @RequestParam(required = false)BigDecimal precioMax,
+            @RequestParam(required = false) String talla,
+            @RequestParam(defaultValue =  "0") int page,
+            @RequestParam(defaultValue = "12") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductoResponse> resultado = productoService.buscarConFiltros(nombre, precioMin, precioMax, talla, pageable)
+                .map(ProductoResponse::fromEntity);
+        return ResponseEntity.ok(resultado);
+    }
+
 
     @PostMapping
     public ResponseEntity<ProductoResponse> crear(@RequestBody ProductoRequest dto) {

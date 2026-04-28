@@ -127,4 +127,8 @@ public class ProductoService {
         }
         productoRepository.deleteById(id);
     }
+
+    public Page <Producto> buscarConFiltros(String nombre, BigDecimal precioMin, BigDecimal precioMax, String talla, Pageable pageable){
+        return productoRepository.buscarConFiltros(nombre, precioMin, precioMax, talla, pageable);
+    }
 }
