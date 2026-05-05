@@ -66,6 +66,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/usuarios/me").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/api/usuarios/me/password").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/productos/buscar").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
                         .anyRequest().authenticated()
 
