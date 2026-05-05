@@ -43,12 +43,12 @@ API RESTful completa para un ecommerce de moda, desarrollada con **Java 17** y *
    ```bash
    git clone https://github.com/Lynx-oss/Backend-Ecommerce-Isabel-Li.git
    ```
-2. Configurar variables de entorno en `src/main/resources/application-dev.properties` (o en tu IDE):
+2. Configurar variables de entorno:
    ```properties
-   DB_URL=jdbc:postgresql://localhost:5432/tu_base_de_datos
+   DB_URL=jdbc:postgresql://localhost:5432/basededatos
    DB_USERNAME=tu_usuario
    DB_PASSWORD=tu_password
-   JWT_SECRET=tu_secreto_super_largo_para_jwt
+   JWT_SECRET=contraseñasecret
    CLOUDINARY_URL=cloudinary://API_KEY:API_SECRET@CLOUD_NAME
    ```
 3. Ejecutar el proyecto:
@@ -58,5 +58,3 @@ API RESTful completa para un ecommerce de moda, desarrollada con **Java 17** y *
 4. Acceder a la documentación de la API en:
    `http://localhost:8080/swagger-ui.html`
 
-## 🧪 Testing
-El proyecto cuenta con unit tests para la lógica de negocio utilizando **JUnit 5 y Mockito**, validando los flujos principales (creación de órdenes, cálculos de inventario, etc).
